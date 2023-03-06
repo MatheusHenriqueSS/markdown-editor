@@ -238,6 +238,10 @@ class HtmlHandler {
             markdown.onkeyup = (e) => {
                 this.RenderHtmlContent(markdown, markdownOutput);
             }
+            //if a user paste content with a mouse, we consider the text added
+            markdown.onpaste = (e) => {
+                this.RenderHtmlContent(markdown, markdownOutput)
+            }
             window.onload = (e) => {
                 this.RenderHtmlContent(markdown, markdownOutput);
             }
