@@ -3,6 +3,10 @@ enum TagType {
     Header1,
     Header2,
     Header3,
+    Header4,
+    Header5,
+    Header6,
+    Bullet,
     HorizontalRule
 }
 
@@ -13,6 +17,10 @@ class TagTypeToHtml {
         this.tagType.set(TagType.Header1, "h1");
         this.tagType.set(TagType.Header2, "h2");
         this.tagType.set(TagType.Header3, "h3");
+        this.tagType.set(TagType.Header4, "h4");
+        this.tagType.set(TagType.Header5, "h5");
+        this.tagType.set(TagType.Header6, "h6");
+        this.tagType.set(TagType.Bullet, "li");
         this.tagType.set(TagType.HorizontalRule, "hr");
     }
 
@@ -88,6 +96,29 @@ class Header3Visitor extends VisitorBase {
     }
 }
 
+class Header4Visitor extends VisitorBase {
+    constructor() {
+        super(TagType.Header4, new TagTypeToHtml());
+    }
+}
+
+class Header5Visitor extends VisitorBase {
+    constructor() {
+        super(TagType.Header5, new TagTypeToHtml());
+    }
+}
+
+class Header6Visitor extends VisitorBase {
+    constructor() {
+        super(TagType.Header6, new TagTypeToHtml())
+    }
+}
+
+class BulletVisitor extends VisitorBase {
+    constructor() {
+        super(TagType.Bullet, new TagTypeToHtml());
+    }
+}
 class ParagraphVisitor extends VisitorBase {
     constructor() {
         super(TagType.Paragraph, new TagTypeToHtml());
@@ -190,6 +221,27 @@ class Header3ChainHandler extends ParseChainHandler {
     }
 }
 
+class Header4ChainHandler extends ParseChainHandler {
+    constructor(document: IMarkdownDocument) {
+        super(document, "#### ", new Header4Visitor());
+    }
+}
+class Header5ChainHandler extends ParseChainHandler {
+    constructor(document: IMarkdownDocument) {
+        super(document, "##### ", new Header5Visitor());
+    }
+}
+class Header6ChainHandler extends ParseChainHandler {
+    constructor(document: IMarkdownDocument) {
+        super(document, "###### ", new Header6Visitor());
+    }
+}
+class BulletChainHandler extends ParseChainHandler {
+    constructor(document: IMarkdownDocument) {
+        super(document, "- ", new BulletVisitor());
+    }
+}
+
 class HorizontalRuleHandler extends ParseChainHandler {
     constructor(document: IMarkdownDocument) {
         super(document, "---", new HorizontalRuleVisitor());
@@ -201,12 +253,20 @@ class ChainOfResponsabilityFactory {
         let header1: Header1ChainHandler = new Header1ChainHandler(document);
         let header2: Header2ChainHanlder = new Header2ChainHanlder(document);
         let header3: Header3ChainHandler = new Header3ChainHandler(document);
+        let header4: Header4ChainHandler = new Header4ChainHandler(document);
+        let header5: Header5ChainHandler = new Header5ChainHandler(document);
+        let header6: Header6ChainHandler = new Header6ChainHandler(document);
         let horizontalRule: HorizontalRuleHandler = new HorizontalRuleHandler(document);
+        let bullet: BulletChainHandler = new BulletChainHandler(document);
         let paragraph: ParagraphHandler = new ParagraphHandler(document);
 
         header1.setNext(header2);
         header2.setNext(header3);
-        header3.setNext(horizontalRule);
+        header3.setNext(header4);
+        header4.setNext(header5);
+        header5.setNext(header6);
+        header6.setNext(bullet);
+        bullet.setNext(horizontalRule);
         horizontalRule.setNext(paragraph);
 
         return header1;
