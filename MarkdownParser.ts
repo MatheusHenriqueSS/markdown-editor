@@ -73,8 +73,14 @@ interface IVisitable {
 
 abstract class VisitorBase implements IVisitor {
     constructor(private readonly tagType: TagType, private readonly TagTypeToHtml: TagTypeToHtml) {}
+    private identifyBoldOrItalic(text: string): string {
+        const bold = new RegExp(/\*\*(.*?)\*\*/gm);
+        const italic = new RegExp(/\_\_(.*?)\_\_/gm);
+        const result = text.replace(bold, '<strong>$1</strong>').replace(italic, '<i>$1</i>')
+        return result;
+    }
     Visit(token: ParseElement, markdownDocument: IMarkdownDocument): void {
-        markdownDocument.Add(this.TagTypeToHtml.OpeningTag(this.tagType), token.CurrentLine, this.TagTypeToHtml.ClosingTag(this.tagType));
+        markdownDocument.Add(this.TagTypeToHtml.OpeningTag(this.tagType), this.identifyBoldOrItalic(token.CurrentLine), this.TagTypeToHtml.ClosingTag(this.tagType));
     }
 }
 
